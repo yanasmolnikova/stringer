@@ -1,12 +1,26 @@
+import java.util.ArrayList;
+
 public class Stringer implements Comparable<StringBuilder> {
     StringBuilder sb;
+    private ArrayList<Stringer> history = new ArrayList<>();
 
     public Stringer(String str) {
         this.sb = new StringBuilder(str);
+        this.history.add(this);
     }
 
     public int compareTo(StringBuilder another) {
         return this.sb.compareTo(another);
+    }
+
+    public Stringer undo() {
+        int lastIndex = this.history.size() - 1;
+
+        Stringer previous = this.history.get(lastIndex);
+        this.history.remove(lastIndex);
+
+        String previousString = previous.toString();
+        this.sb = new StringBuilder(previousString);
     }
 
     public Stringer append(Object obj) {
