@@ -6,5 +6,13 @@ public class Main {
         stringer.undo();
         stringer.undo();
         System.out.println(stringer.toString());
+
+        UStringBuilder builder = new UStringBuilder();
+
+        builder.append("Hello");
+        builder.append(", Yana");
+        builder.undo();
+
+        System.out.println(builder.toString());
     }
 }
