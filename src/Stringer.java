@@ -2,7 +2,11 @@ import java.util.Stack;
 
 public class Stringer implements Comparable<StringBuilder> {
     private StringBuilder sb;   // delegation StringBuilder's methods
-    private Stack<StringBuilder> history = new Stack<>();   // history stack
+    private Stack<Action> actions = new Stack<>();   // history stack
+
+    private interface Action {
+        void undo();
+    }
 
     public Stringer(String str) {
         this.sb = new StringBuilder(str);   // create StringBuilder object
@@ -10,28 +14,18 @@ public class Stringer implements Comparable<StringBuilder> {
     }
 
     private void updateHistory(String str) {
-        StringBuilder state = new StringBuilder(str);
-        this.history.push(state);
-    }
-
-    private StringBuilder getPrevious() {
-        if (this.history.isEmpty()) {
-            return new StringBuilder("");
-        }
-
-        return this.history.pop();  // get last history action
+        Action action = () -> sb.delete(sb.length() - str.length(), sb.length());
+        this.actions.add(action);
     }
 
     public int compareTo(StringBuilder another) {
         return this.sb.compareTo(another);
     }
 
-    public Stringer undo() {
-        StringBuilder previous = this.getPrevious();
-
-        this.sb = new StringBuilder(previous);
-
-        return this;    // pre-last history action
+    public void undo() {
+        if (!this.actions.empty()) {
+            this.actions.pop().undo();
+        }
     }
 
     public Stringer append(Object obj) {
